@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package   nd-list-post-by-category
+ * @package   newdev-list-post-by-category
  * @author    Your Name <hello@newdev.co>
  * @license   GPL-2.0+
  * @link      http://newdev.co
@@ -10,15 +10,15 @@
  * @wordpress-plugin
  * Plugin Name:       List posts by category
  * Plugin URI:        http://code.newdev.co/nd-list-posts-by-category
- * Description:       Lists posts by category.
- * Version:           1.0.0
+ * Description:       Lists posts by the main category on the single.php view
+ * Version:           3.0.0
  * Author:            NewDev
  * Author URI:        http://newdev.co
  * Text Domain:       nd-lpbc
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /lang
- * GitHub Plugin URI: https://github.com/crissoca/nd-list-post-by-category
+ * GitHub Plugin URI: https://github.com/crissoca/newdev-list-post-by-category
  */
 
  // Prevent direct file access
@@ -31,14 +31,6 @@ if ( ! class_exists( 'ND_List_Post_by_Category' ) ) :
 	final class ND_List_Post_by_Category {
 
 		/**
-		 * @TODO - Rename "nd-lpbc" to the name your your widget
-		 *
-		 * Unique identifier for your widget.
-		 *
-		 *
-		 * The variable name is used as the text domain when internationalizing strings
-		 * of text. Its value should match the Text Domain file header in the main
-		 * widget file.
 		 *
 		 * @since    1.0.0
 		 *
