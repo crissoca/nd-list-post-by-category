@@ -31,7 +31,6 @@ if ( ! class_exists( 'ND_List_Post_by_Category' ) ) :
 	final class ND_List_Post_by_Category {
 
 		/**
-		 *
 		 * @since    1.0.0
 		 *
 		 * @var      string
@@ -89,7 +88,7 @@ if ( ! class_exists( 'ND_List_Post_by_Category' ) ) :
 		 * @return    Plugin slug variable.
 		 */
 		public function get_plugin_slug() {
-		    return $this->plugin_slug;
+			return $this->plugin_slug;
 		}
 
 		/**
@@ -168,6 +167,5 @@ endif;
 function nd_lpbc() {
 	return ND_List_Post_by_Category::instance();
 }
-
 
 $GLOBALS['ND_List_Post_by_Category'] = nd_lpbc();

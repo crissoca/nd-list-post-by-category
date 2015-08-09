@@ -18,9 +18,13 @@ if ( ! defined ( 'ABSPATH' ) ) {
 	exit;
 }
 
+$article_wrapper = current_theme_supports('html5') == true ? 'article' : 'div';
+
 if ( ! empty( $instance['title'] ) ) {
 	echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ). $args['after_title'];
 }
+
+$img_size = $instance['img_size'] ? $instance['img_size'] : 'thumbnail';
 
 $nd_max_posts = $instance['max_posts'] ? (int)$instance['max_posts'] : 3;
 
@@ -51,10 +55,10 @@ echo '<div class="'. $this->get_widget_slug() .'_wrapper">' . "\n";
 
 		if ( $nd_query->have_posts() ) : while ( $nd_query->have_posts() ) : $nd_query->the_post();
 
-			echo '<article class="lpbc-related-article">' . "\n";
-			echo "\t" . '<a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_post_thumbnail( $post_id, 'post-regular-image', array( 'class' => 'lpbc-post-image' ) ) . '</a>' . "\n";
+			echo '<'. $article_wrapper .' class="lpbc-related-article">' . "\n";
+			echo "\t" . '<a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_post_thumbnail( $post_id, $img_size, array( 'class' => 'lpbc-post-image' ) ) . '</a>' . "\n";
 			echo "\t" . '<h1><a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_title() . '</a></h1>' . "\n";
-			echo '</article>' . "\n";
+			echo '</'. $article_wrapper .'>' . "\n";
 
 		endwhile; endif; wp_reset_postdata();
 
