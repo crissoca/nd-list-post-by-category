@@ -18,34 +18,52 @@ if ( ! defined ( 'ABSPATH' ) ) {
 	exit;
 }
 
-$article_wrapper = current_theme_supports('html5') == true ? 'article' : 'div';
+$nd_article_wrapper = current_theme_supports('html5') == true ? 'article' : 'div';
 
 if ( ! empty( $instance['title'] ) ) {
 	echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ). $args['after_title'];
 }
 
-$img_size = $instance['img_size'] ? $instance['img_size'] : 'thumbnail';
+/**
+ * @todo  Option not available in this widget, just preparing for future widget.
+ */
+$nd_default_tax = ! empty( $instance['default_tax'] ) ? $instance['default_tax'] : 'category';
 
-$nd_max_posts = $instance['max_posts'] ? (int)$instance['max_posts'] : 3;
+$nd_img_size   = ! empty( $instance['img_size'] ) ? $instance['img_size'] : 'thumbnail';
 
-echo '<div class="'. $this->get_widget_slug() .'_wrapper">' . "\n";
+$nd_max_posts  = ! empty( $instance['max_posts'] ) ? (int)$instance['max_posts'] : 3;
 
-	$categories = get_the_category();
+$nd_tax_title  = ! empty( $instance['cat_title'] ) ? $instance['cat_title'] : __( 'Other Categories', nd_lpbc()->get_plugin_slug() );
 
-	if ( ! empty( $categories ) ) {
-		$curr_cat = $categories[0]->term_id;
-		echo '<h2 class="lpbc-category-title">' . esc_html( $categories[0]->name ) . '</h2>';
+$nd_tax_exclude = ! empty( $instance['exclude_tax'] ) ? explode(',', $instance['exclude_tax']) : '';
+
+$nd_tax_depth = ! empty( $instance['tax_depth'] ) ? $instance['tax_depth'] : 0;
+
+$nd_tax_number = ! empty( $instance['tax_number'] ) ? $instance['tax_number'] : 0;
+
+echo '<div class="'. self::get_widget_slug() .'_wrapper">' . "\n";
+
+	$taxonomy = nd_lpbc()->get_the_taxonomy( get_the_ID(), $nd_default_tax );
+
+	if ( ! empty( $taxonomy ) ) {
+		$nd_curr_tax = $taxonomy[0]->term_id;
+
+		if ( ! empty( $nd_curr_tax ) )
+			$nd_tax_exclude[] = $nd_curr_tax;
+
+		echo '<h2 class="lpbc-category-title">' . esc_html( $taxonomy[0]->name ) . '</h2>';
 	}
 
 	echo '<div class="lpbc-content">' . "\n";
 
 		$args = array(
 			//Category Parameters
-			'cat'                 => $curr_cat,
+			'cat'                 => $nd_curr_tax,
 			//Type & Status Parameters
 			'post_status'         => 'publish',
 			//Order & Orderby Parameters
 			'orderby'             => 'rand',
+			//Ignores All Sticky Posts
 			'ignore_sticky_posts' => true,
 			//Pagination Parameters
 			'posts_per_page'      => $nd_max_posts,
@@ -55,22 +73,31 @@ echo '<div class="'. $this->get_widget_slug() .'_wrapper">' . "\n";
 
 		if ( $nd_query->have_posts() ) : while ( $nd_query->have_posts() ) : $nd_query->the_post();
 
-			echo '<'. $article_wrapper .' class="lpbc-related-article">' . "\n";
-			echo "\t" . '<a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_post_thumbnail( $post_id, $img_size, array( 'class' => 'lpbc-post-image' ) ) . '</a>' . "\n";
-			echo "\t" . '<h1><a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_title() . '</a></h1>' . "\n";
-			echo '</'. $article_wrapper .'>' . "\n";
+			$post_id = get_the_id();
+
+			echo '<'. $nd_article_wrapper .' class="lpbc-related-article">' . "\n";
+			echo "\t" . '<a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_post_thumbnail( $post_id, $nd_img_size, array( 'class' => 'lpbc-post-image' ) ) . '</a>' . "\n";
+			echo "\t" . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '" title="' . the_title_attribute ( array( 'echo' => false ) ) . '">' . get_the_title() . '</a></h3>' . "\n";
+			echo '</'. $nd_article_wrapper .'>' . "\n";
 
 		endwhile; endif; wp_reset_postdata();
 
-		$cat_args = array(
-			'title_li' => __( 'Other Channels', nd_lpbc()->get_plugin_slug() ),
-			'exclude'  => $curr_cat,
-			'echo'     => false,
+
+		/**
+		 * Lists the other taxonomies
+		 */
+
+		$nd_cat_args = array(
+			'title_li'   => $nd_tax_title,
+			'exclude'    => implode(',', $nd_tax_exclude),
+			'echo'       => false,
+			'depth'      => $nd_tax_depth,
+			'number'     => $nd_tax_number,
 		);
 
-		echo '<ul class="lpbc-other-categories">' . "\n";
+		echo '<ul class="lpbc-other-categories list-unstyled">' . "\n";
 
-			echo wp_list_categories( $cat_args );
+			echo wp_list_categories( $nd_cat_args );
 
 		echo '</ul>' . "\n";
 

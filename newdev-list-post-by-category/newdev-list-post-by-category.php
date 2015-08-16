@@ -140,6 +140,22 @@ if ( ! class_exists( 'ND_List_Post_by_Category' ) ) :
 		}
 
 		/**
+		 * Include required frontend files.
+		 */
+		public function get_the_taxonomy( $id = false, $taxonomy = 'category' ) {
+
+			$taxonomies = get_the_terms( $id, $taxonomy );
+
+			if ( ! $taxonomies || is_wp_error( $taxonomies ) )
+				$taxonomies = array();
+
+			$taxonomies = array_values( $taxonomies );
+
+			return apply_filters( 'get_the_taxonomy', $taxonomies );
+
+		}
+
+		/**
 		 * Looks for a template inside a theme if it's not there it fallsback on the plugin default template
 		 */
 		public function nd_template_loader( $file_name ) {

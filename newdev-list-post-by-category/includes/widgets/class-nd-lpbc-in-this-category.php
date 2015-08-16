@@ -29,7 +29,7 @@ class ND_LPBC_Category_Posts extends WP_Widget {
      *
      * @var      string
      */
-    public $widget_slug = 'lpbc-in-this-category';
+    static $widget_slug = 'lpbc-in-this-category';
 
 	/*--------------------------------------------------*/
 	/* Constructor
@@ -41,17 +41,16 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 	 */
 	public function __construct() {
 
-		$this->widget_cssclass    = $this->get_widget_slug() . '-class';
-		$this->widget_description = __( 'List related posts by category.', $this->get_widget_slug() );
-		$this->widget_id          = $this->get_widget_slug();
-		$this->widget_name        = __( 'List related posts by category', $this->get_widget_slug() );
+		$this->widget_cssclass    = self::get_widget_slug() . '-class';
+		$this->widget_description = __( 'List related posts by category.', self::get_widget_slug() );
+		$this->widget_name        = __( 'List related posts by category', self::get_widget_slug() );
 
 		parent::__construct(
 
-			$this->get_widget_slug(),
+			self::get_widget_slug(),
 			$this->widget_name,
 			array(
-				'classname'  => $this->widget_cssclass,
+				'classname'   => $this->widget_cssclass,
 				'description' => $this->widget_description
 			)
 		);
@@ -74,8 +73,8 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 	 *
 	 * @return    Widget slug variable.
 	 */
-	public function get_widget_slug() {
-	    return $this->widget_slug;
+	static function get_widget_slug() {
+	    return self::$widget_slug;
 	}
 
 	/*--------------------------------------------------*/
@@ -92,19 +91,15 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 
 
 		// Check if there is a cached output
-		$cache = wp_cache_get( $this->get_widget_slug(), 'widget' );
+		$cache = wp_cache_get( self::get_widget_slug(), 'widget' );
 
 		if ( !is_array( $cache ) )
 			$cache = array();
 
-		if ( ! isset ( $args['widget_id'] ) )
-			$args['widget_id'] = $this->get_widget_slug();
-
-		if ( isset ( $cache[ $args['widget_id'] ] ) )
-			return print $cache[ $args['widget_id'] ];
+		if ( isset ( $cache[ self::get_widget_slug() ] ) )
+			return print $cache[ self::get_widget_slug() ];
 
 		// go on with your widget logic, put everything into a string and …
-
 
 		extract( $args, EXTR_SKIP );
 
@@ -116,18 +111,19 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 		$widget_string .= $after_widget;
 
 
-		$cache[ $args['widget_id'] ] = $widget_string;
+		$cache[ self::get_widget_slug() ] = $widget_string;
 
-		wp_cache_set( $this->get_widget_slug(), $cache, 'widget' );
+		wp_cache_set( self::get_widget_slug(), $cache, 'widget' );
 
 		print $widget_string;
 
 	} // end widget
 
 
-	public function flush_widget_cache()
-	{
-    	wp_cache_delete( $this->get_widget_slug(), 'widget' );
+	public function flush_widget_cache() {
+
+    	wp_cache_delete( self::get_widget_slug(), 'widget' );
+
 	}
 	/**
 	 * Processes the widget's options to be saved.
@@ -137,9 +133,17 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 	 */
 	public function update( $new_instance, $old_instance ) {
 
-		$instance = $old_instance;
+		$instance = array_map('strip_tags', $new_instance);
 
-		// TODO: Here is where you update your widget's old values with the new, incoming values
+		$this->flush_widget_cache();
+
+		$alloptions = wp_cache_get('alloptions', 'options');
+
+		if ( isset( $alloptions[self::get_widget_slug()] ) ) {
+
+			delete_option(self::get_widget_slug());
+
+		}
 
 		return $instance;
 
@@ -169,7 +173,7 @@ class ND_LPBC_Category_Posts extends WP_Widget {
 	 */
 	public function register_widget_styles() {
 
-		wp_enqueue_style( $this->get_widget_slug().'-widget-styles', plugins_url( 'css/widget-nd-lpbc-in-this-category.css', dirname( dirname(__FILE__) ) ) );
+		wp_enqueue_style( self::get_widget_slug().'-widget-styles', plugins_url( 'css/widget-nd-lpbc-in-this-category.css', dirname( dirname(__FILE__) ) ) );
 
 	} // end register_widget_styles
 
